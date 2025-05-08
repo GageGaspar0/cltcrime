@@ -1,3 +1,4 @@
+// src/components/statcards/TopFiveCard.js
 import React from 'react';
 import './TopFiveCard.css';
 
@@ -6,7 +7,7 @@ const TOP5 = [
   { rank: '#2', value: 14972, label: 'SOUTH BV'    },
   { rank: '#3', value: 11319, label: 'S TRYON ST'  },
   { rank: '#4', value: 10205, label: 'ALBEMARLE RD'},
-  { rank: '#5', value:  7471, label: 'E.INDEPENDENCE' }
+  { rank: '#5', value:  7471, label: 'E.INDEPEND..' }
 ];
 
 export default function TopFiveCard() {

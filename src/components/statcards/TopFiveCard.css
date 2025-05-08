@@ -1,13 +1,12 @@
+/* src/components/statcards/TopFiveCard.css */
 .top-five-cards {
     display: flex;
-    width: fit-content;      
-    min-width: 360px;         /* fill the parent .top-five-container */
+    width: fit-content;              
     justify-content: center;
     align-items: center;
     justify-content: center;
     margin-left: 2px;
-    margin-right: 2px;
-    margin-bottom: 10px;
+    margin-right: 2px; 
     overflow: auto;
     gap: 4px;
   }

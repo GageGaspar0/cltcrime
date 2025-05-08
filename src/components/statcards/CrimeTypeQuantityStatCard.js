@@ -1,3 +1,4 @@
+// src/components/statcards/CrimeTypeQuantityStatCard.js
 import React, { useState, useEffect } from 'react';
 import './CrimeTypeQuantityStatCard.css';
 

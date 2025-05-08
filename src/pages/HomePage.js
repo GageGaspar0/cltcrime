@@ -1,3 +1,4 @@
+// src/pages/HomePage.js
 import './HomePage.css';
 import React, { useState } from 'react';
 import CrimeReportsPerYearStatCard from '../components/statcards/CrimeReportsPerYearStatCard';

@@ -1,3 +1,4 @@
+/* src/pages/HomePage.css */
 .homepage {
     display: grid;
     width: 100%;
@@ -70,9 +71,10 @@
         margin-bottom: 10px;
     }
 
-   /* .top-five-cards {
-       max-width: 450px;
-      }*/
+   .top-five-cards {
+       min-width: 300px;
+      }
+      
 }
 
 .statcard-container {
