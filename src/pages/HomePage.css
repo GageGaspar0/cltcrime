@@ -1,0 +1,125 @@
+.homepage {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-areas: 
+        "search-container main-dashboard main-dashboard main-dashboard";
+}
+
+.search-container {
+    grid-area: search-container;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 400px;
+    padding-top: 0;
+    background-color: rgb(130, 218, 248, 0.1);
+    border-radius: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px; 
+    margin-left: 10px;
+    margin-right: 10px;
+    box-shadow: 0 1px 2px rgba(255, 255, 255, 0.2);
+}
+
+.location-label {
+    color: white;
+    font-size: clamp(0.3rem, 1.6vw, 0.4rem);
+    font-family: 'Roboto', sans-serif;
+    margin-top: 10px;
+    white-space: nowrap;
+    width: fit-content;
+    border: 0.5px solid white;
+    border-image: 0 1px 2px rgba(255, 255, 255, 0.2);
+    background-color: rgb(130, 218, 248, 0.1);
+    border-radius: 30px;
+    padding: 0px 20px;
+}
+
+.main-dashboard {
+    grid-area: main-dashboard;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    background-color: rgb(130, 218, 248, 0.1);
+    border-radius: 20px;
+    min-width: 275px;
+    margin: 20px;
+    box-shadow: 0 1px 2px rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 600px) {
+    .homepage {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+        grid-template-areas: 
+            "search-container"
+            "main-dashboard";
+    }
+
+    .search-container {
+        margin: 10px;
+        min-width: 320px;
+    }
+
+    .search-container p {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+   /* .top-five-cards {
+       max-width: 450px;
+      }*/
+}
+
+.statcard-container {
+    display: flex;
+    align-items: center;
+    height: 110px;
+    margin-top: 15px;
+    border: 0.1px solid rgb(130, 129, 129);
+    border-image: 0 5px 1px rgba(255, 255, 255, 0.2);
+    background-color: rgb(130, 218, 248, 0.1);
+    border-radius: 15px;
+    width: 96%;       
+    grid-template-columns: 1fr 2fr;
+    grid-template-areas: 
+        "CrimeReportsPerYearStatCard CrimeTypeQuantityStatCard CrimeTypeQuantityStatCard";
+}
+
+.search-neighborhood {
+    width: 96%;
+ 
+}
+
+.top-five-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100px;
+    width: 100%;
+    border-top: 0.1px solid rgb(130, 129, 129);
+    border-bottom: 0.1px solid rgb(130, 129, 129);
+    border-image: 0 5px 1px rgba(255, 255, 255, 0.2);
+    background-color: rgb(130, 218, 248, 0.1);
+    
+}
+
+.search-container p {
+    color: white;
+    font-size: clamp(0.6rem, 1.4vw, 0.9rem);
+    font-family: 'Roboto', sans-serif;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    white-space: nowrap;
+    width: fit-content;
+    font-weight: bold;;
+    border: 0.5px solid white;
+    border-image: 0 1px 2px rgba(255, 255, 255, 0.2);
+    background-color: rgb(130, 218, 248, 0.1);
+    border-radius: 30px;
+    padding: 5px 20px;
+}

@@ -1,0 +1,123 @@
+.neighborhood-search {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 5px;
+    margin-top: 10px;
+    height: 255px;
+    border: 0.1px solid rgb(130, 129, 129);
+    border-image: 0 5px 1px rgba(255, 255, 255, 0.2);
+    background-color: rgb(130, 218, 248, 0.1);
+    border-radius: 15px;
+
+  }
+  
+  .neighborhood-search form {
+    display: flex;
+    align-items: center;
+    max-width: 400px;
+  }
+  
+  .neighborhood-search input {
+    padding: 8px 12px;
+    font-size: 1.1rem;
+    border: 1px solid #cecbcb;
+    border-radius: 4px 0 0 4px;
+    width: 230px;
+    background-color: rgba(4, 109, 255, 0.481);
+    border: 0.1px solid rgb(130, 129, 129);
+    border-image: 0 5px 1px rgba(255, 255, 255, 0.2);
+    background-color: rgb(130, 218, 248, 0.1);
+    border-radius: 8px;
+    color: white;
+  }
+
+h2{
+    color: rgb(248, 249, 250);
+    font-size: clamp(0.7rem, 1vw, 0.9rem);
+    font-family: 'Roboto', sans-serif;
+    margin-bottom: 30px;
+    white-space: nowrap;
+    width: fit-content;
+    border-image: 0 1px 2px rgba(255, 255, 255, 0.2);
+    font-weight: bold;
+    margin-top: 0px;
+}
+
+h3 {
+    color: white;
+    font-size: clamp(0.6rem, 1.3vw, 0.6rem);
+    font-family: 'Roboto', sans-serif;
+    margin-top: 85px;
+    white-space: normal; 
+    word-wrap: break-word; 
+    width: 80%; 
+    border-image: 0 1px 2px rgba(255, 255, 255, 0.2);
+    font-weight: normal;
+    text-align: center;
+}
+  
+  .neighborhood-search button {
+    padding: 8px 8px;
+    font-size: 1rem;
+    border: 1px solid #007acc;
+    background: #007acc;
+    color: #fff;
+    border-radius: 0 10px 10px 0;
+    cursor: pointer;
+    margin-left: -26px;
+    
+  }
+  
+  .neighborhood-search button:disabled {
+    background: #2b7eec;
+    border-color: #888;
+    cursor: not-allowed;
+  }
+  
+  .suggestions {
+    list-style: none;
+    margin: 4px 0 0;
+    padding: 0;
+    width: 255px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    max-height: 100px;
+    overflow-y: auto;
+    background-color: #007acc;
+    color: white;
+    font-size: clamp(0.8rem, 0.9vw, 1.8rem);
+  }
+  
+  .suggestions li {
+    padding: 6px 8px;
+    cursor: pointer;
+    font-size: inherit;
+  }
+  
+  .suggestions li:hover {
+    background: #f0f0f0;
+  }
+
+  .neighborhood-search-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }
+
+.logo {
+  background: none; 
+  margin: 0px auto 0;
+  filter: invert(1);
+}
+
+.logo {
+  height: 70%;
+  max-height: 8vh;
+  width: auto;
+  object-fit: contain;
+}

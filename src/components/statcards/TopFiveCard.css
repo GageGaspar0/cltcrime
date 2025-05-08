@@ -1,0 +1,50 @@
+.top-five-cards {
+    display: flex;
+    width: fit-content;      
+    min-width: 360px;         /* fill the parent .top-five-container */
+    justify-content: center;
+    align-items: center;
+    justify-content: center;
+    margin-left: 2px;
+    margin-right: 2px;
+    margin-bottom: 10px;
+    overflow: auto;
+    gap: 4px;
+  }
+  
+  .top-five-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;                      
+    height: 80px;   
+    width: 80px;       
+    background: rgba(4, 108, 255, 0.75);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);   
+    gap: 0px;
+    margin: 0px;
+    padding: 0px;     
+  }
+  
+  .tf-static-label {
+    color: #fff;
+    font-size: 0.7rem;
+    margin-bottom: 20px;
+  }
+  
+  .tf-value {
+    color: rgb(123, 186, 242);
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .tf-dynamic-label {
+    color: #000;
+    font-size: 0.45rem;
+    text-align: center;        /* center text */
+    white-space: normal;       /* allow wrapping */
+    word-break: break-word;    /* break long words */
+    font-weight: bold;
+  }
