@@ -1,3 +1,4 @@
+// src/components/search/NeighborhoodSearch.js
 import React, { useState } from 'react';
 import cltNames from '../../assets/clt_neighborhood_names.json';
 import './NeighborhoodSearch.css';
@@ -6,19 +7,58 @@ import CharlotteCrimeLogo  from '../../assets/CharlotteCrimeLogo.png';
 export default function NeighborhoodSearch({ onSelect }) {
   const [input, setInput] = useState('');
   const [suggestions, setSuggestions] = useState([]);
+  const [prevFirstChar, setPrevFirstChar] = useState('');
+  const [error, setError] = useState(null);
+
+  const handleFirstCharChange = async (firstChar) => {
+
+    try {
+    const encoded = encodeURIComponent(firstChar);
+    const url = `http://localhost:5001/api/crime/${encoded}`;
+    const res = await fetch(url);
+      
+    if (!res.ok) throw new Error(`Server responded ${res.status}`);
+    
+    const data = await res.json();
+    console.log('crime data', data);
+    
+    const crimesArray = Array.isArray(data)
+      ? data
+      : data.d
+      ? data.d
+      : data.value
+      ? data.value
+      : [];
+    
+  } catch (err) {
+    setError(`Failed to fetch crime data: ${err.message}`);
+    console.error('Error details:', err);
+  } finally {
+    setInput('');
+  }
+};
+
 
   const handleChange = (e) => {
     const val = e.target.value;
     setInput(val);
   
+    const firstChar = val.charAt(0) || '';
+    if (firstChar !== prevFirstChar) {
+      setPrevFirstChar(firstChar);
+      if (firstChar) {
+        handleFirstCharChange(firstChar);
+      }
+    }
+
     if (!val) {
       setSuggestions([]);
       return;
     }
   
-    // show only names that START with the typed text
+
     const matches = cltNames.filter(name =>
-      name.toLowerCase().startsWith(val.toLowerCase())   // <-- updated line
+      name.toLowerCase().startsWith(val.toLowerCase())   
     );
   
     setSuggestions(matches.length ? matches : ['No Matches']);
@@ -26,7 +66,7 @@ export default function NeighborhoodSearch({ onSelect }) {
 
   const handleSelect = (name) => {
     if (name === 'No Matches') return;
-    // populate input with the clicked suggestion but don't auto-submit
+    
     setInput(name);
     setSuggestions([]);
   };
