@@ -14,10 +14,11 @@ export default function NeighborhoodSearch({ onSelect }) {
 
   // ---------- load slice for first-character ----------
   const handleFirstCharChange = async (firstChar) => {
+    const letter = firstChar.toUpperCase();
     setLoadingData(true);
     try {
      //test const url = `http://localhost:5001/api/crime/${encodeURIComponent(firstChar)}`;
-     /*prod*/ const url = `https://cltcrime-service.onrender.com/api/crime/${encodeURIComponent(firstChar)}`;
+     /*prod*/ const url = `https://cltcrime-service.onrender.com/api/crime/${encodeURIComponent(letter)}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`Server responded ${res.status}`);
       const data = await res.json();
