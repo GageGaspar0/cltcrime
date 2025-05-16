@@ -313,7 +313,7 @@ export default function CrimeDashboard({ location, records }) {
     if (!location || location === 'Charlotte, NC') return;
 
     const firstChar = location[0].toUpperCase();
-    const url = `http://localhost:5001/api/crime/${encodeURIComponent(
+    const url = `https://cltcrime-service.onrender.com/api/crime/${encodeURIComponent(
       firstChar,
     )}`;
 
