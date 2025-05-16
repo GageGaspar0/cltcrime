@@ -1,15 +1,32 @@
 /* cltcrime/src/App.css */
 
-.App{
+.App {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height:100vh;
-  width:100vw;
-  overflow:hidden;
-  background: linear-gradient(135deg, #023c88, #000406);
+  height: auto;
+  width: 100vw;
+  /* allow scrolling instead of hiding */
+  overflow-x: auto;
+  overflow-y: auto;
+  background: linear-gradient(135deg, #062c5d, #000406);
   background-size: 100% 100%;
-  
+}
+
+/* keep layout as-is for narrow mobile screens (max-width: 850px) */
+@media (min-width: 850px) {
+  .App {
+    overflow-x: auto;
+  }
+}
+
+/* force horizontal scrolling for screens between 851px and 1215px, so content won't shrink */
+@media (min-width: 851px) and (max-width: 1215px) {
+  .homepage {
+    overflow-x: auto;
+  }
+
+
 }
 
 

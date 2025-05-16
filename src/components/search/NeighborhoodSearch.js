@@ -1,8 +1,7 @@
-// src/components/search/NeighborhoodSearch.js
 import React, { useState } from 'react';
 import cltNames from '../../assets/clt_neighborhood_names.json';
 import './NeighborhoodSearch.css';
-import CharlotteCrimeLogo  from '../../assets/CharlotteCrimeLogo.png';
+import CharlotteCrimeLogo from '../../assets/CharlotteCrimeLogo.png';
 
 export default function NeighborhoodSearch({ onSelect }) {
   const [input, setInput] = useState('');
@@ -10,106 +9,121 @@ export default function NeighborhoodSearch({ onSelect }) {
   const [prevFirstChar, setPrevFirstChar] = useState('');
   const [error, setError] = useState(null);
 
+  const [crimeData, setCrimeData] = useState([]);
+  const [loadingData, setLoadingData] = useState(false);
+
+  // ---------- load slice for first-character ----------
   const handleFirstCharChange = async (firstChar) => {
-
+    setLoadingData(true);
     try {
-    const encoded = encodeURIComponent(firstChar);
-    const url = `http://localhost:5001/api/crime/${encoded}`;
-    const res = await fetch(url);
-      
-    if (!res.ok) throw new Error(`Server responded ${res.status}`);
-    
-    const data = await res.json();
-    console.log('crime data', data);
-    
-    const crimesArray = Array.isArray(data)
-      ? data
-      : data.d
-      ? data.d
-      : data.value
-      ? data.value
-      : [];
-    
-  } catch (err) {
-    setError(`Failed to fetch crime data: ${err.message}`);
-    console.error('Error details:', err);
-  } finally {
-    setInput('');
-  }
-};
+      const url = `http://localhost:5001/api/crime/${encodeURIComponent(firstChar)}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Server responded ${res.status}`);
+      const data = await res.json();
+      const arr = Array.isArray(data) ? data : data.d || data.value || [];
+      setCrimeData(arr);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingData(false);
+      setTimeout(() => setError(null), 10_000);
+    }
+  };
 
-
+  // ---------- input change ----------
   const handleChange = (e) => {
     const val = e.target.value;
     setInput(val);
-  
+    setError(null);
+
     const firstChar = val.charAt(0) || '';
     if (firstChar !== prevFirstChar) {
       setPrevFirstChar(firstChar);
-      if (firstChar) {
-        handleFirstCharChange(firstChar);
-      }
+      if (firstChar) handleFirstCharChange(firstChar);
+      else setCrimeData([]);
     }
 
     if (!val) {
       setSuggestions([]);
       return;
     }
-  
-
-    const matches = cltNames.filter(name =>
-      name.toLowerCase().startsWith(val.toLowerCase())   
+    const matches = cltNames.filter((name) =>
+      name.toLowerCase().startsWith(val.toLowerCase()),
     );
-  
     setSuggestions(matches.length ? matches : ['No Matches']);
   };
 
-  const handleSelect = (name) => {
-    if (name === 'No Matches') return;
-    
-    setInput(name);
-    setSuggestions([]);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (cltNames.includes(input)) {
-      onSelect?.(input);
+  // ---------- selection ----------
+  const finalizeSelection = (name) => {
+    if (name === 'No Matches') {
+      setError('Invalid neighborhood—no matches found.');
+      return;
     }
+
+    // gather every matching record for downstream analysis
+    const matchedRecords = crimeData.filter((rec) => {
+      const raw = typeof rec.LOCATION === 'string' ? rec.LOCATION : '';
+      const loc = raw.replace(/^[\d\s]+/, '');
+      return loc === name;
+    });
+
+    const count = matchedRecords.length;
+
+    // pass name, count, **and records** up
+    onSelect?.(name, count, matchedRecords);
+
+    // reset UI
     setInput('');
     setSuggestions([]);
   };
 
-return (
+  const handleSelect = (name) => {
+    if (loadingData) return;
+    finalizeSelection(name);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (loadingData) return;
+    if (!suggestions.includes(input)) {
+      setError('Please select a valid neighborhood from suggestions.');
+      return;
+    }
+    finalizeSelection(input);
+  };
+
+  const isValid = suggestions.includes(input);
+
+  return (
     <div className="neighborhood-search">
-       
-       <img src={CharlotteCrimeLogo} alt="Logo" className="logo"/>
-       <h2>Neighborhood Safety Report</h2>
-        <form onSubmit={handleSubmit} autoComplete="off">
-            <input
-                type="text"
-                value={input}
-                onChange={handleChange}
-                placeholder="Neighborhood"
-            />
-            <button type="submit" disabled={!cltNames.includes(input)}>
-                {'>'}
-            </button>
-        </form>
-        {!input && (
-            <h3>
-                Disclaimer: Data is relevant only to Charlotte, NC. 
-            </h3>
-        )}
-        {input && (
-            <ul className="suggestions">
-                {suggestions.map((s, i) => (
-                    <li key={i} onClick={() => handleSelect(s)}>
-                        {s}
-                    </li>
-                ))}
-            </ul>
-        )}
+      <img src={CharlotteCrimeLogo} alt="Logo" className="logo" />
+      <h2>Neighborhood Safety Report</h2>
+
+      <form onSubmit={handleSubmit} autoComplete="off">
+        <input
+          type="text"
+          value={input}
+          onChange={handleChange}
+          placeholder="Neighborhood"
+        />
+        <button type="submit" disabled={!isValid || loadingData}>
+          {'>'}
+        </button>
+      </form>
+
+      {!input && <h3>Disclaimer: Data is relevant only to Charlotte, NC.</h3>}
+
+      {input && suggestions.length > 0 && (
+        <ul className="suggestions">
+          {suggestions.map((s, i) => (
+            <li key={i} onClick={() => handleSelect(s)}>
+              {s}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {error && <div className="error">{error}</div>}
     </div>
-);
+  );
 }

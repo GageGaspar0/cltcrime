@@ -1,0 +1,23 @@
+@media (max-width: 1215px) {
+    .homepage {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+        grid-template-areas: 
+            "search-container"
+            "main-dashboard";
+        margin-left: 500px;
+        margin-right: 500px;
+    }
+
+    .search-container {
+        margin-left: 200px;
+        margin-right: 200px;
+        min-width: 320px;
+    }
+
+
+   .top-five-cards {
+       min-width: 300px;
+    }
+
+}
