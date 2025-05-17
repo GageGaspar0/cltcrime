@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import cltNames from '../../assets/clt_neighborhood_names.json';
 import './NeighborhoodSearch.css';
 import CharlotteCrimeLogo from '../../assets/CharlotteCrimeLogo.png';
 
-export default function NeighborhoodSearch({ onSelect }) {
+export default function NeighborhoodSearch({ onSelect, onLoading }) {
   const [input, setInput] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [prevFirstChar, setPrevFirstChar] = useState('');
@@ -12,13 +12,14 @@ export default function NeighborhoodSearch({ onSelect }) {
   const [crimeData, setCrimeData] = useState([]);
   const [loadingData, setLoadingData] = useState(false);
 
-  // ---------- load slice for first-character ----------
+  const [pendingSelection, setPendingSelection] = useState(null);
+
+
   const handleFirstCharChange = async (firstChar) => {
     const letter = firstChar.toUpperCase();
     setLoadingData(true);
     try {
-     //test const url = `http://localhost:5001/api/crime/${encodeURIComponent(firstChar)}`;
-     /*prod*/ const url = `https://cltcrime-service.onrender.com/api/crime/${encodeURIComponent(letter)}`;
+      const url = `https://cltcrime-service.onrender.com/api/crime/${encodeURIComponent(letter)}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`Server responded ${res.status}`);
       const data = await res.json();
@@ -28,17 +29,16 @@ export default function NeighborhoodSearch({ onSelect }) {
       console.error(err);
     } finally {
       setLoadingData(false);
-      setTimeout(() => setError(null), 10_000);
     }
   };
 
-  // ---------- input change ----------
+  /* ---------------------------------------------------------------------- */
   const handleChange = (e) => {
     const val = e.target.value;
     setInput(val);
     setError(null);
 
-    const firstChar = val.charAt(0) || '';
+    const firstChar = val.charAt(0).toUpperCase() || '';
     if (firstChar !== prevFirstChar) {
       setPrevFirstChar(firstChar);
       if (firstChar) handleFirstCharChange(firstChar);
@@ -55,38 +55,43 @@ export default function NeighborhoodSearch({ onSelect }) {
     setSuggestions(matches.length ? matches : ['No Matches']);
   };
 
-  // ---------- selection ----------
-  const finalizeSelection = (name) => {
+ 
+  const finalizeSelection = (name, force = false) => {
     if (name === 'No Matches') {
       setError('Invalid neighborhood—no matches found.');
       return;
     }
 
-    // gather every matching record for downstream analysis
+     setSuggestions([]);
+    setInput('');
+
+ 
+    if (!force && loadingData) {
+      onLoading?.(true);
+      setPendingSelection(name);          
+      return;                            
+    }
+
+  
     const matchedRecords = crimeData.filter((rec) => {
       const raw = typeof rec.LOCATION === 'string' ? rec.LOCATION : '';
       const loc = raw.replace(/^[\d\s]+/, '');
       return loc === name;
     });
 
-    const count = matchedRecords.length;
+  
+    onSelect?.(name, matchedRecords.length, matchedRecords);
+    onLoading?.(false);
 
-    // pass name, count, **and records** up
-    onSelect?.(name, count, matchedRecords);
-
-    // reset UI
+    setPendingSelection(null);
     setInput('');
     setSuggestions([]);
   };
 
-  const handleSelect = (name) => {
-    if (loadingData) return;
-    finalizeSelection(name);
-  };
+  const handleSelect = (name) => finalizeSelection(name);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (loadingData) return;
     if (!suggestions.includes(input)) {
       setError('Please select a valid neighborhood from suggestions.');
       return;
@@ -94,8 +99,16 @@ export default function NeighborhoodSearch({ onSelect }) {
     finalizeSelection(input);
   };
 
+  
+  useEffect(() => {
+    if (!loadingData && pendingSelection) {
+      finalizeSelection(pendingSelection, true);  
+    }
+  }, [loadingData, pendingSelection]);           
+
   const isValid = suggestions.includes(input);
 
+  /* ---------------------------------------------------------------------- */
   return (
     <div className="neighborhood-search">
       <img src={CharlotteCrimeLogo} alt="Logo" className="logo" />
@@ -108,7 +121,7 @@ export default function NeighborhoodSearch({ onSelect }) {
           onChange={handleChange}
           placeholder="Neighborhood"
         />
-        <button type="submit" disabled={!isValid || loadingData}>
+        <button type="submit" disabled={!isValid}>
           {'>'}
         </button>
       </form>

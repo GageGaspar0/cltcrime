@@ -1,27 +1,40 @@
 import './HomePage.css';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import CrimeReportsPerYearStatCard from '../components/statcards/CrimeReportsPerYearStatCard';
 import CrimeTypeQuantityStatCard from '../components/statcards/CrimeTypeQuantityStatCard';
 import NeighborhoodSearch from '../components/search/NeighborhoodSearch';
 import TopFiveCard from '../components/statcards/TopFiveCard';
 import CrimeDashboard from '../components/crimeDashboard/CrimeDashboard';
+import CrimeDashboardSkeleton from '../components/crimeDashboard/CrimeDashboardSkeleton';
+import '../components/crimeDashboard/CrimeDashboard.css';
 
 export default function HomePage() {
   const [location, setLocation] = useState('Charlotte, NC');
   const [matchCount, setMatchCount] = useState(null);
-  const [records, setRecords] = useState([]); // ⬅️  holds matched rows
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [records, setRecords] = useState([]); 
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading]     = useState(false); 
+
+
+  const dashRef = useRef(null);
 
   const handleNeighborhoodSelect = (name, count, recs) => {
-    setIsAnimating(true);
+    setLoading(false);                  
+    setLocation(name);
+    setMatchCount(count);
+    setRecords(recs);
+  };
 
-    setTimeout(() => {
-      setLocation(name);
-      setMatchCount(count);
-      setRecords(recs);
-      setIsAnimating(false);
-    }, 6000);
+    const handleLoading = (isLoading) => {
+    setLoading(isLoading);
+    
+        if (isLoading && window.innerWidth <= 1215 && dashRef.current) {
+     
+      const target =
+        dashRef.current.querySelector(".arrest-stats") ||
+        dashRef.current;
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+     }
   };
 
   return (
@@ -37,7 +50,7 @@ export default function HomePage() {
         </div>
 
         <div className="search-neighborhood">
-          <NeighborhoodSearch onSelect={handleNeighborhoodSelect} />
+          <NeighborhoodSearch onSelect={handleNeighborhoodSelect} onLoading={handleLoading} />
         </div>
 
         <div className="top-three-wrapper">
@@ -106,10 +119,10 @@ export default function HomePage() {
         )}
       </div>
 
-      <div className={`main-dashboard${isAnimating ? ' animating' : ''}`}>
-        {/* pass both location & the record array */}
-        <CrimeDashboard location={location} records={records} />
-        {!isAnimating && matchCount !== null && <p></p>}
+      <div className="main-dashboard" ref={dashRef}>
+        {loading
+          ? <CrimeDashboardSkeleton />
+          : <CrimeDashboard location={location} records={records} />}
       </div>
     </div>
   );

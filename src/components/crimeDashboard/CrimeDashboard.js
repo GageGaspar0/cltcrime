@@ -1,10 +1,8 @@
 import './CrimeDashboard.css';
 import React, { useState, useEffect } from 'react';
-import defaultCrimeData from '../../assets/default_crime_data.json';   // ← NEW
+import defaultCrimeData from '../../assets/default_crime_data.json';  
 import TopThreeZipcodes from '../statcards/TopThreeZipcodes';
-/* -------------------------------------------------------------------------- */
-/* helper: tiny least-squares slope → 'increasing' | 'decreasing' | 'stable'  */
-/* -------------------------------------------------------------------------- */
+
 function trendFromSeries(series) {
   if (series.length < 2) return 'insufficient data';
   const n = series.length;
@@ -19,15 +17,13 @@ function trendFromSeries(series) {
   return 'stable';
 }
 
-/* -------------------------------------------------------------------------- */
-/* core analytics                                                             */
-/* -------------------------------------------------------------------------- */
+
 function analyzeCrimeData(records) {
   const total_reports_count = records.length;
 
-  const monthCounts = new Map();        // yyyy-mm → #
-  const yearCounts = new Map();         // DATE_REPORTED based
-  const reportsByYear = new Map();      // explicit YEAR based
+  const monthCounts = new Map();        
+  const yearCounts = new Map();         
+  const reportsByYear = new Map();      
   const nibrsCounts = new Map();
   const locationTypeCounts = new Map();
 
@@ -36,7 +32,7 @@ function analyzeCrimeData(records) {
   const arrestsPerYear = new Map();
 
   records.forEach((r) => {
-    /* ---------- DATE-based splits ---------- */
+   
     const date = new Date(r.DATE_REPORTED);
     if (!Number.isNaN(date.valueOf())) {
       const y = date.getFullYear();
@@ -45,13 +41,13 @@ function analyzeCrimeData(records) {
       yearCounts.set(y, (yearCounts.get(y) || 0) + 1);
     }
 
-    /* ---------- explicit YEAR for reports_by_year ---------- */
+    
     const yr = r.YEAR;
     if (typeof yr === 'number' && !Number.isNaN(yr)) {
       reportsByYear.set(yr, (reportsByYear.get(yr) || 0) + 1);
     }
 
-    /* ---------- NIBRS, location type ---------- */
+   
     const nibrs = r.HIGHEST_NIBRS_DESCRIPTION ?? '';
     nibrsCounts.set(nibrs, (nibrsCounts.get(nibrs) || 0) + 1);
 
@@ -61,7 +57,7 @@ function analyzeCrimeData(records) {
       (locationTypeCounts.get(locType) || 0) + 1,
     );
 
-    /* ---------- clearance status ---------- */
+    
     const clr = String(r.CLEARANCE_STATUS ?? '').trim().toLowerCase();
     if (clr === 'cleared by arrest') {
       total_arrests += 1;
@@ -74,9 +70,9 @@ function analyzeCrimeData(records) {
     }
   });
 
-  /* ---------- averages ---------- */
+  
 const yearsPresent = [...reportsByYear.keys()].filter((y) => y !== 2025);
-const totalMonths = yearsPresent.length * 12;          // 12 months per full year
+const totalMonths = yearsPresent.length * 12;          
 const avgMonth =
   totalMonths === 0 ? 0 : total_reports_count / totalMonths;
 
@@ -94,7 +90,7 @@ const avgMonth =
       .reduce((a, [, v]) => a + v, 0) /
     (arrestsPerYear.size || 1);
 
-  /* ---------- NIBRS top-three ---------- */
+ 
   const sortedNibrs = [...nibrsCounts.entries()].sort((a, b) => b[1] - a[1]);
   const topThree = sortedNibrs.slice(0, 3);
   const top_three_nibrs_descriptions = topThree.map(([d]) => d);
@@ -102,7 +98,7 @@ const avgMonth =
     topThree.map(([d, c]) => [d, +(100 * (c / total_reports_count)).toFixed(0)]),
   );
 
-  /* ---------- trends ---------- */
+
   const lastThreeYears = yearCountsWithout2025
     .sort(([a], [b]) => a - b)
     .slice(-3)
@@ -120,7 +116,7 @@ const avgMonth =
   const lastSix = monthsWanted.map((m) => monthCounts.get(m) || 0).reverse();
   const lastSixMonthsTrend = trendFromSeries(lastSix);
 
-  /* ---------- assemble ---------- */
+  
   return {
     total_reports_count,
     average_report_count_per_month: avgMonth < 1 ? <h2>less than 1</h2>: +avgMonth.toFixed(0),
@@ -142,12 +138,10 @@ const avgMonth =
   };
 }
 
-/* -------------------------------------------------------------------------- */
-/* component                                                                  */
-/* -------------------------------------------------------------------------- */
+
 export default function CrimeDashboard({ location, records }) {
   const [metrics, setMetrics] = useState({
-    /* ------------ city-wide defaults (unchanged) ------------ */
+  
     total_reports_count: 675727,
     average_report_count_per_month: 6757,
     avg_report_count_per_year: 81344,
@@ -259,18 +253,18 @@ export default function CrimeDashboard({ location, records }) {
     },
   });
 
-  /* ZIP-code comparison sentence */
+ 
   const [zipComparison, setZipComparison] = useState(
     'ZIP code data unavailable',
   );
 
-  /* ---------------- recompute on new records or fetch ------------------- */
+
   useEffect(() => {
     const process = (rows, label) => {
       const newMetrics = analyzeCrimeData(rows);
       setMetrics(newMetrics);
 
-      /* ---------- ZIP-code comparison ---------- */
+     
       let text = 'ZIP code data unavailable';
       if (rows.length) {
         const firstWithZip = rows.find((r) =>
@@ -295,7 +289,7 @@ export default function CrimeDashboard({ location, records }) {
       }
       setZipComparison(text);
 
-      /* ---------- console debug ---------- */
+    
       console.log(`[CrimeDashboard] ${label}: ${rows.length} records`);
       console.log('  zip comparison:', text);
       Object.entries(newMetrics).forEach(([k, v]) =>
@@ -303,13 +297,13 @@ export default function CrimeDashboard({ location, records }) {
       );
     };
 
-    /* --- use records supplied from parent --- */
+  
     if (records && records.length) {
       process(records, 'analysed');
       return;
     }
 
-    /* --- otherwise fetch slice for the first letter --- */
+  
     if (!location || location === 'Charlotte, NC') return;
 
     const firstChar = location[0].toUpperCase();
@@ -339,18 +333,18 @@ export default function CrimeDashboard({ location, records }) {
   /* ---------------------------------------------------------------------- */
   return (
     <div className="crime-dashboard">
-      {/* ---------------- selected location ---------------- */}
+    
       <div className="selected-location-name">
         <h2>{location}</h2>
       </div>
 
       
 
-      {/* ---------------- yearly tiles ---------------- */}
-<div className="year-section">          {/* ← takes grid-area */}
+   
+<div className="year-section">         
   <h2 className="section-header">Crime Reports By Year</h2>
 
-  <div className="year-tiles">          {/* ← keeps existing grid */}
+  <div className="year-tiles">         
     {Object.entries(metrics.reports_by_year).map(([year, count]) => (
       <div key={year} className="year-tile">
         <h2>{year}</h2>
@@ -364,7 +358,7 @@ export default function CrimeDashboard({ location, records }) {
   </div>
 </div>
 
-      {/* ---------------- crime stats ---------------- */}
+   
       <div className="crime-stats">
         <div className="crime-stats-section">
           <h2>Total</h2> {metrics.total_reports_count}
@@ -380,7 +374,7 @@ export default function CrimeDashboard({ location, records }) {
         </div>
       </div>
 
-      {/* ---------------- top three crimes ---------------- */}
+     
       <div className="top-three">
         <h2>Top Three Crimes - % of Total</h2>
         {metrics.top_three_nibrs_descriptions.map((desc, i) => (
@@ -392,7 +386,7 @@ export default function CrimeDashboard({ location, records }) {
         ))}
       </div>
 
-      {/* ---------------- crime description counts ---------------- */}
+     
       <div className="crime-description-with-counts">
         <h2>Crime Description with Counts</h2>
         {Object.entries(metrics.nibrs_description_with_counts).map(
@@ -406,7 +400,7 @@ export default function CrimeDashboard({ location, records }) {
         )}
       </div>
 
-      {/* ---------------- location type counts ---------------- */}
+      
       <div className="location-type-counts">
         <h2>Location Type Counts</h2>
         {Object.entries(metrics.location_type_counts).map(([type, count]) => (
@@ -418,7 +412,7 @@ export default function CrimeDashboard({ location, records }) {
         ))}
       </div>
 
-      {/* ---------------- arrest stats ---------------- */}
+   
       <div className="arrest-stats">
         <div className="crime-stats-section">
           <h2>Total</h2> {metrics.total_arrests}
@@ -434,7 +428,7 @@ export default function CrimeDashboard({ location, records }) {
         </div>
       </div>
 
-      {/* ---------------- crime trends ---------------- */}
+    
       <div className="crime-trends">
         <h2>Crime Trends</h2>
         <div className="trend-row">
